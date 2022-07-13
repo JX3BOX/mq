@@ -1,0 +1,9 @@
+{
+    "go.testEnvVars": {},
+    "go.testFlags": [
+        "-v",
+        "-count=1",
+    ],
+    "go.testTimeout": "3000s",
+    "yaml.validate": false
+}
