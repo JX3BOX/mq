@@ -34,6 +34,18 @@ func InitRedis(conf IRedisConfig) {
 	}
 }
 
+func SetRedisClient(client *redis.Client) {
+	redisClient = client
+	ctx := context.Background()
+	c, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	if err := redisClient.Ping(c).Err(); err != nil {
+		log.Fatal(err)
+	} else {
+		log.Println("redis Connect success")
+	}
+}
+
 type RedisMessageQueue struct {
 	Prefix string
 }

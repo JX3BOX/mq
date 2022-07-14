@@ -32,20 +32,4 @@ func main() {
 	queue.WorkerHandle("test", func(value string) {
 		fmt.Println("custom", value)
 	})
-	// redisClient := redis.NewClient(&redis.Options{
-	// 	Addr:     conf.GetURL(),
-	// 	Password: conf.GetPassword(),
-	// 	DB:       conf.GetDBIndex(),
-	// })
-	// redisClient.Ping(context.Background())
-	// for {
-	// 	ctx := context.Background()
-	// 	result, err := redisClient.BLPop(ctx, 0, "mq_test").Result()
-	// 	log.Println(result)
-	// 	if err != nil {
-	// 		fmt.Println(err.Error())
-	// 	} else {
-	// 		log.Println(result)
-	// 	}
-	// }
 }
