@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/JX3BOX/mq"
 )
@@ -27,9 +30,17 @@ func main() {
 		URL: "127.0.0.1:6379",
 	}
 	mq.InitRedis(conf)
-	var queue = mq.RedisMessageQueue{Prefix: "mq:"}
+	ctx, cancel := context.WithCancel(context.Background())
+	var queue = mq.RedisMessageQueue{Prefix: "mq-dev:", Context: ctx, Cancel: cancel}
+
+	go func() {
+		time.Sleep(3 * time.Second)
+		queue.Stop()
+		log.Println(111)
+	}()
 
 	queue.WorkerHandle("test", func(value string) {
 		fmt.Println("custom", value)
 	})
+
 }

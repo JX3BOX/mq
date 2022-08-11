@@ -47,7 +47,9 @@ func SetRedisClient(client *redis.Client) {
 }
 
 type RedisMessageQueue struct {
-	Prefix string
+	Prefix  string
+	Context context.Context
+	Cancel  context.CancelFunc
 }
 
 func (r *RedisMessageQueue) Push(key string, value string) error {
@@ -70,12 +72,20 @@ func (r *RedisMessageQueue) PushJSON(key string, value interface{}) error {
 
 func (r *RedisMessageQueue) WorkerHandle(key string, handler func(value string)) {
 	for {
-		ctx := context.Background()
-		result, err := redisClient.BLPop(ctx, 0, r.Prefix+key).Result()
-		if err != nil {
-			fmt.Println(err.Error())
-		} else {
-			handler(string(result[1]))
+		select {
+		case <-r.Context.Done():
+			return
+		default:
+			result, err := redisClient.BLPop(context.Background(), 0, r.Prefix+key).Result()
+			if err != nil {
+				fmt.Println(err.Error())
+			} else {
+				handler(string(result[1]))
+			}
 		}
 	}
+}
+
+func (r *RedisMessageQueue) Stop() {
+	r.Cancel()
 }

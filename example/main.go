@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
@@ -29,7 +30,7 @@ func main() {
 		URL: "127.0.0.1:6379",
 	}
 	mq.InitRedis(conf)
-	var queue = mq.RedisMessageQueue{Prefix: "mq:"}
+	var queue = mq.RedisMessageQueue{Prefix: "mq-dev:", Context: context.Background()}
 	c := time.NewTicker(time.Second)
 	for range c.C {
 		v := fmt.Sprintf("productor:%d", time.Now().Unix())
