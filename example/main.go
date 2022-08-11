@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/JX3BOX/mq"
 )
@@ -31,11 +30,24 @@ func main() {
 	}
 	mq.InitRedis(conf)
 	var queue = mq.RedisMessageQueue{Prefix: "mq-dev:", Context: context.Background()}
-	c := time.NewTicker(time.Second)
-	for range c.C {
-		v := fmt.Sprintf("productor:%d", time.Now().Unix())
+	// c := time.NewTicker(time.Second)
+	// for range c.C {
+	// 	v := fmt.Sprintf("productor:%d", time.Now().Unix())
+	// 	log.Println(v)
+	// 	if err := queue.Push("test", v); err != nil {
+	// 		log.Println(err)
+	// 	}
+	// }
+	for i := 0; i < 3; i++ {
+		v := fmt.Sprintf("productor:%d", i)
 		log.Println(v)
 		if err := queue.Push("test", v); err != nil {
+			log.Println(err)
+		}
+		if err := queue.Push("test1", v); err != nil {
+			log.Println(err)
+		}
+		if err := queue.Push("test2", v); err != nil {
 			log.Println(err)
 		}
 	}

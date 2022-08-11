@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -50,6 +51,7 @@ type RedisMessageQueue struct {
 	Prefix  string
 	Context context.Context
 	Cancel  context.CancelFunc
+	wg      sync.WaitGroup
 }
 
 func (r *RedisMessageQueue) Push(key string, value string) error {
@@ -71,6 +73,8 @@ func (r *RedisMessageQueue) PushJSON(key string, value interface{}) error {
 }
 
 func (r *RedisMessageQueue) WorkerHandle(key string, handler func(value string)) {
+	r.wg.Add(1)
+	defer r.wg.Done()
 	for {
 		select {
 		case <-r.Context.Done():
@@ -88,4 +92,5 @@ func (r *RedisMessageQueue) WorkerHandle(key string, handler func(value string))
 
 func (r *RedisMessageQueue) Stop() {
 	r.Cancel()
+	r.wg.Wait()
 }

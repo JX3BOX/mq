@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/JX3BOX/mq"
@@ -33,14 +32,26 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	var queue = mq.RedisMessageQueue{Prefix: "mq-dev:", Context: ctx, Cancel: cancel}
 
-	go func() {
-		time.Sleep(3 * time.Second)
-		queue.Stop()
-		log.Println(111)
-	}()
+	// go func() {
+	// 	queue.Stop()
+	// 	log.Println(111)
+	// }()
 
-	queue.WorkerHandle("test", func(value string) {
-		fmt.Println("custom", value)
+	go queue.WorkerHandle("test", func(value string) {
+		fmt.Println("start custom", value)
+		time.Sleep(2 * time.Second)
+		fmt.Println("end custom", value)
 	})
-
+	go queue.WorkerHandle("test1", func(value string) {
+		fmt.Println("start custom1", value)
+		time.Sleep(2 * time.Second)
+		fmt.Println("end custom1", value)
+	})
+	queue.WorkerHandle("test2", func(value string) {
+		fmt.Println("start custom2", value)
+		time.Sleep(2 * time.Second)
+		fmt.Println("end custom2", value)
+	})
+	time.Sleep(time.Second)
+	queue.Stop()
 }
