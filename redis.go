@@ -80,7 +80,7 @@ func (r *RedisMessageQueue) WorkerHandle(key string, handler func(value string))
 		case <-r.Context.Done():
 			return
 		default:
-			result, err := redisClient.BLPop(context.Background(), 0, r.Prefix+key).Result()
+			result, err := redisClient.BLPop(r.Context, 0, r.Prefix+key).Result()
 			if err != nil {
 				fmt.Println(err.Error())
 			} else {
